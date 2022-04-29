@@ -8,7 +8,8 @@ class LinkListsSpider(scrapy.Spider):
     name = 'links'
     allowed_domains = ['https://www.urbandictionary.com/']
     try:
-        start_urls = ['https://www.urbandictionary.com/?page='+str(i) for i in range(1,50)]
+        with open("link_list.csv", "rt") as f:
+            start_urls = [url.strip() for url in f.readlines()][1:5]
     except:
         start_urls = []
 
