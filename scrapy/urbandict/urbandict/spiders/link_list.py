@@ -19,7 +19,6 @@ class LinkListsSpider(scrapy.Spider):
 
         text = selection.get()
         pages = re.findall('(\d+)',text)
-        print(int(pages[0]))
 
         for s in range(1,int(pages[0])+1):
             l = Link()

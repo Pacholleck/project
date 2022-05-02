@@ -16,7 +16,7 @@ class LinksSpider(scrapy.Spider):
     name = 'words'
     allowed_domains = ['https://www.urbandictionary.com/']
     try:
-        with open("links.csv", "rt") as f:
+        with open("links_words.csv", "rt") as f:
             start_urls = [url.strip() for url in f.readlines()][1:3]
     except:
         start_urls = []
@@ -31,14 +31,19 @@ class LinksSpider(scrapy.Spider):
         date_xpath         = '//a[re:test(@href, "/author.*")]/following-sibling::text()'
         # meaning_xpath         = '//div[@aria-label="Piętro"]/div[2]/div/text()'    
        
-        p['name']       = response.xpath(name_xpath).get()
-        p['author']     = response.xpath(author_xpath).get()
+        name      = response.xpath(name_xpath).getall()
+        print(name)
+        author     = response.xpath(author_xpath).getall()
         #p['upvotes']    = response.xpath(upvotes_xpath).get()
         #p['downvotes']  = response.xpath(downvotes_xpath).getall()
-        p['date']       = response.xpath(date_xpath).get()
+        date       = response.xpath(date_xpath).getall()
 
-        
+        for i in range(0,len(name)):
+            p['name']       = name[0]
+            p['author']     = author[i]
+            #p['upvotes']    = response.xpath(upvotes_xpath).get()
+            #p['downvotes']  = response.xpath(downvotes_xpath).getall()
+            p['date']       = date[i]
 
-
-        yield p
+            yield p
 
