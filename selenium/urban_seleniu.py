@@ -35,7 +35,7 @@ def get_wordlinks(limit=limit):
         url=f'http://urbandictionary.com?page={i}'
         driver.get(url)
         try:
-            words_temp=([my_elem.get_attribute("href") for my_elem in driver.find_elements(By.XPATH,"//h1/a[matches(@href,'/define*')]")
+            words_temp=([my_elem.get_attribute("href") for my_elem in driver.find_elements(By.XPATH,"//h1/a[matches(@href,'/define*')]")])
             words.extend(words_temp)
         except:
             words=words.append([my_elem.get_attribute("href") for my_elem in driver.find_elements(By.XPATH,"//h1/a")])
