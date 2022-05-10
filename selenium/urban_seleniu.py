@@ -12,9 +12,9 @@ import pandas as pd
 
 custom_limit = 400
 
-word_pages = 5
+word_pages = 10
 
-wait_time = 2
+wait_time = 1
 
 
 # get list of the pages to scrap
@@ -124,8 +124,8 @@ for link in wordlist:
         ############if there is no last button then there is only one page. scrap data from the page and increase the counter for page limit##############
         if last_number is None:
             fdf=getpagecontent(link)
-            output_frame=pd.concat([output_frame,fdf])
             counter = counter + 1
+            output_frame=pd.concat([output_frame,fdf])
 
         ########## if there is a last page number find it and loop through all pages until the last increasing counter for each page scraped###########
         else:
@@ -133,13 +133,14 @@ for link in wordlist:
             for s in range(1, int(pages[0]) + 1):
                 url2 = f'{link}&page={s}'
                 fdf=getpagecontent(url2)
+                counter = counter + 1
                 output_frame=pd.concat([output_frame,fdf])
     ############ upon reaching page limit return information and break loop############
     else:
-        print("page limite reached")
+        print("page limit reached")
         break
 
 
-print(len(output_frame))
+output_frame.to_csv("output.csv")
 ######## close connection ##########
 driver.close()
