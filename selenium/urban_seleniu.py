@@ -75,7 +75,7 @@ try:
     print(gecko_path)
     ser = Service(gecko_path)
     options = webdriver.firefox.options.Options()
-    options.headless = False
+    options.headless = True
     driver = webdriver.Firefox(options=options, service=ser)
 
     url = 'http://urbandictionary.com'
