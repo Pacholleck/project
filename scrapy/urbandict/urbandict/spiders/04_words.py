@@ -47,7 +47,7 @@ class LinksSpider(scrapy.Spider):
         date       = response.xpath(date_xpath).getall()
 
         for i in range(0,len(word)):
-            p['word']       = word[0]
+            p['word']       = word[i]
             p['author']     = author[i]
             p['date']       = date[i]
 
