@@ -12,4 +12,6 @@ To run scrapy, use the following commands in this order:
 If you wish to remove or change the limit of the maximum number of pages to scrap, please set `limiter` to "False" 
 or modify `limit` in the .py-files under /scrapy/urbandict/urbandict/spider.
 
+Please make sure to have Scrapy installed properly.
+
 ## Run Selenium
