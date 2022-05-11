@@ -1,48 +1,54 @@
 # -*- coding: utf-8 -*-
+# Import libraries
 from multiprocessing import Condition
 from operator import lshift
 import scrapy
 
 class Words(scrapy.Item):
-    name        = scrapy.Field()
+    # Set up expected output
+    word        = scrapy.Field()
     author      = scrapy.Field()
-#    upvotes     = scrapy.Field()
-#    downvotes   = scrapy.Field() 
     date        = scrapy.Field()
-    # meaning     = scrapy.Field()
 
 
 class LinksSpider(scrapy.Spider):
+    # Use list with all links to each word with its multiple subpages to extract the word, author and date.
+    
+    limiter = True # Limits the pages if true
+    limit = 100 # Set limit of pages to scrap
+
+    # Initialize Spider
     name = 'words'
+
+    # Pages to scrap
     allowed_domains = ['https://www.urbandictionary.com/']
-    try:
-        with open("links_words.csv", "rt") as f:
-            start_urls = [url.strip() for url in f.readlines()][1:]
-    except:
-        start_urls = []
+    if limiter == True:
+        try:
+            with open("links_words.csv", "rt") as f:
+                start_urls = [url.strip() for url in f.readlines()][1:limit]
+        except:
+            start_urls = []
+    else:
+        try:
+            with open("links_words.csv", "rt") as f:
+                start_urls = [url.strip() for url in f.readlines()][1:]
+        except:
+            start_urls = []
 
     def parse(self, response):
         p = Words()
 
         name_xpath          = '//h1/a[re:test(@href, "/define.*")]/text()'
         author_xpath         = '//a[re:test(@href, "/author.*")]/text()'
-        #upvotes_xpath          = '//div[@data-direction="up"]/span'
-        #downvotes_xpath      = '//div[@data-direction="down"]/span/text()'
-        date_xpath         = '//a[re:test(@href, "/author.*")]/following-sibling::text()'
-        # meaning_xpath         = '//div[@aria-label="Piętro"]/div[2]/div/text()'    
+        date_xpath         = '//a[re:test(@href, "/author.*")]/following-sibling::text()'  
        
-        name      = response.xpath(name_xpath).getall()
-        print(name)
+        word      = response.xpath(name_xpath).getall()
         author     = response.xpath(author_xpath).getall()
-        #p['upvotes']    = response.xpath(upvotes_xpath).get()
-        #p['downvotes']  = response.xpath(downvotes_xpath).getall()
         date       = response.xpath(date_xpath).getall()
 
-        for i in range(0,len(name)):
-            p['name']       = name[0]
+        for i in range(0,len(word)):
+            p['word']       = word[0]
             p['author']     = author[i]
-            #p['upvotes']    = response.xpath(upvotes_xpath).get()
-            #p['downvotes']  = response.xpath(downvotes_xpath).getall()
             p['date']       = date[i]
 
             yield p
