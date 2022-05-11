@@ -1,4 +1,4 @@
-limiter = False
+limiter = True
 global counter
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -61,7 +61,7 @@ def merge_frame_and_dictionary(dic, pd):
 
 
 if limiter == True:
-    counter_limit = 100
+    counter_limit = 90
 else:
     counter_limit = custom_limit
 
