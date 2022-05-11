@@ -52,10 +52,6 @@ def getpagecontent(url):
     return (df)
 
 
-def merge_frame_and_dictionary(dic, pd):
-    print(dic)
-    return ("aaaaaaaaaa")
-
 
 ######## limiter function #############
 
