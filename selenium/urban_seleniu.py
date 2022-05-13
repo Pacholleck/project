@@ -1,12 +1,21 @@
 limiter = True
 global counter
+
+import os
+
+os.system('pip install pandas')
+
+os.system('pip install selenium')
+
+
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from os import path as pth
+import pandas as pd
 import time
 import re
-import pandas as pd
+
 
 ### settings ##########
 
