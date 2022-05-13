@@ -1,3 +1,5 @@
+limit_pages = True
+
 import time
 from urllib import request
 import pandas
@@ -7,9 +9,19 @@ import csv
 
 start_time = time.time()
 
+#### empty final data frame ####
+# dfObj = pd.DataFrame(columns=['User_ID', 'UserName', 'Action'])
+df1 = pandas.DataFrame(columns=['word', 'author', 'date'])
+
 #### Page limiter and initial URL ####
 
 page_limit = 10
+
+if limit_pages == True:
+    page_limit_ALL = 100
+else:
+    page_limit_ALL = 3
+
 url = 'http://urbandictionary.com'
 links = []
 
@@ -26,92 +38,81 @@ for i in range(1, int(page_limit)+1):
         links.append(x)
         #print(x)
 
-for i in links:
-    print(i)
-
-
-#### check how many pages of definitions each word has and put them in a list ####
-
-last_pages = []
-j = 0
-for link in links:
-    j = j+1
-    print('word' + str(j))
-    url_3 = link
-    html_3 = request.urlopen(url_3)
-    bs_3 = BS(html_3.read(), 'html.parser')
-
-    try:
-        last_page = bs_3.find('a', string=re.compile('Last')).get('href')
-        last_pages.append(url + last_page)
-    except:
-        last_pages.append(link + '&page=1')
-
-for k in last_pages:
-    print(k)
-
-#### make a dataframe with links to words and their last pages ####
-
-df = pandas.DataFrame(links, columns=['links'])
-
-print(df)
-
-df['last pages'] = last_pages
-
-#print(df)
-print(df.to_string())
-
-df.to_csv('links.csv', index=False, encoding='utf-8')
 
 #### Loop to open each link and find the number of entries, author and date of entry ####
 
+words = []
 date_list = []
 author_list = []
+counter = 1
 
-limit = 'http://urbandictionary.com/define.php?term=YSL&page=3'
-x = 1
-url_5 = 'http://urbandictionary.com/define.php?term=YSL&page='+ str(x)
+for link in links:
 
-while url_5 != limit:
-    html_5 = request.urlopen(url_5)
-    bs_5 = BS(html_5.read(), 'html.parser')
+    if counter <= page_limit_ALL:
 
-    authors = bs_5.find_all('a', {'class': 'text-denim dark:text-fluorescent hover:text-limon-lime'}, href=re.compile('^/author.*'))
-    dates = bs_5.find_all('div', {'class':'contributor font-bold'})
+        url_3 = link
+        html_3 = request.urlopen(url_3)
+        bs_3 = BS(html_3.read(), 'html.parser')
 
-    for author in authors:
-        author_list.append(author.get_text())
-
-    for date in dates:
-        d = str(date).split('</',2)
-        date_list.append(str(d[1])[3:])
-
-    x = x+1
-    url_2 = 'http://urbandictionary.com/define.php?term=YSL&page=' + str(x)
+        try:
+            last_page = bs_3.find('a', string=re.compile('Last')).get('href')
+        except:
+            last_page = link + '&page=1'
 
 
-df = pandas.DataFrame(author_list, columns=['authors'])
-df['dates'] = date_list
+        limit_2 = last_page.split('page=', 1)
+        limit_3 = limit_2[1]
 
-print(df.to_string())
+        #print(limit_3[0])
 
-"""for row in df.index:
+        #print("1")
 
-    limit = df['last pages'][row]
-    z = 0
-    url_4 = df['links'][row] + '&page=' + str(z)
+        for x in range(1,int(limit_3)+1):
 
-    while url_4 != limit:
+            if counter <= page_limit_ALL:
+                url_5 = link + '&page=' + str(x)
+                html_5 = request.urlopen(url_5)
+                bs_5 = BS(html_5.read(), 'html.parser')
+                divs = bs_5.find_all('div',{'class': 'p-5 md:p-8'})
 
-        html_4 = request.urlopen(url_4)
-        bs_4 = BS(html_4.read(), 'html.parser')
+                for div in divs:
 
-        authors = bs_4.find_all('a', {'class':'text-denim dark:text-fluorescent hover:text-limon-lime'},  string=re.compile('.'))
-        print(authors)
 
-        z = z+1
-        url_4 = df['links'][row] + '&page=' + str(z)
-"""
+                    #print("2")
+                    word = div.findNext('a',{'class': 'word text-denim font-bold font-serif dark:text-fluorescent break-words text-3xl md:text-[2.75rem] md:leading-10'}).get_text()
+                    authors = div.findNext('a', {'class': 'text-denim dark:text-fluorescent hover:text-limon-lime'}, href=re.compile('^/author.*')).get_text()
+                    dates = div.findNext('div', {'class': 'contributor font-bold'})
+                    print(str(dates))
+
+
+
+                    l4d = str(dates).split('</',2)
+                    dates = str(l4d[1])[3:]
+
+                    print(counter)
+
+                    d = {'word': word, 'author': authors, 'date': dates}
+                    df1 = df1.append(d, ignore_index=True)
+
+                counter = counter + 1
+
+            else:
+                break
+        print(counter)
+    else:
+        break
+
+        #url_5 = 'http://urbandictionary.com/define.php?term=YSL&page=' + str(x)
+
+
+
+
+print(df1.to_string())
+
+
 
 #### check how long the script took to execute ####
+print(" ")
 print("--- Execution time: %s seconds ---" % (time.time() - start_time))
+
+df1.to_csv('outputSoup.csv', index=False, encoding='utf-8')
