@@ -65,9 +65,37 @@ df.to_csv('links.csv', index=False, encoding='utf-8')
 
 #### Loop to open each link and find the number of entries, author and date of entry ####
 
+date_list = []
+author_list = []
+
+limit = 'http://urbandictionary.com/define.php?term=YSL&page=3'
+x = 1
+url_5 = 'http://urbandictionary.com/define.php?term=YSL&page='+ str(x)
+
+while url_5 != limit:
+    html_5 = request.urlopen(url_5)
+    bs_5 = BS(html_5.read(), 'html.parser')
+
+    authors = bs_5.find_all('a', {'class': 'text-denim dark:text-fluorescent hover:text-limon-lime'}, href=re.compile('^/author.*'))
+    dates = bs_5.find_all('div', {'class':'contributor font-bold'})
+
+    for author in authors:
+        author_list.append(author.get_text())
+
+    for date in dates:
+        d = str(date).split('</',2)
+        date_list.append(str(d[1])[3:])
+
+    x = x+1
+    url_2 = 'http://urbandictionary.com/define.php?term=YSL&page=' + str(x)
 
 
-for row in df.index:
+df = pandas.DataFrame(author_list, columns=['authors'])
+df['dates'] = date_list
+
+print(df.to_string())
+
+"""for row in df.index:
 
     limit = df['last pages'][row]
     z = 0
@@ -83,7 +111,7 @@ for row in df.index:
 
         z = z+1
         url_4 = df['links'][row] + '&page=' + str(z)
-
+"""
 
 #### check how long the script took to execute ####
-print("--- Execution time: %s seconds --
+print("--- Execution time: %s seconds ---" % (time.time() - start_time))
