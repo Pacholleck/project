@@ -1,5 +1,3 @@
-import pandas as pd
-
 limit_pages = True
 import os
 
@@ -8,7 +6,7 @@ os.system('pip install bs4')
 
 import time
 from urllib import request
-import pandas
+import pandas as pd
 from bs4 import BeautifulSoup as BS
 import re
 import csv
