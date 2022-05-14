@@ -19,7 +19,7 @@ import re
 
 ### settings ##########
 
-custom_limit = 400
+custom_limit = 10
 
 word_pages = 10
 
@@ -57,7 +57,9 @@ def getpagecontent(url):
         a=div.find_element(By.XPATH,".//div/a[contains(@href,'.php?author=')]").get_attribute('text')
         h = div.find_element(By.XPATH, "./div/h1/a[contains(@href,'define')]").get_attribute('text')
         dict={'word':h,'author':a,'date': d}
-        df=df.append(dict,ignore_index=True)
+        ser=pd.Series(data=dict,index=['word','author','date']).to_frame().T
+        df=pd.concat([ser,df])
+        #df=df.append(dict,ignore_index=True)
     return (df)
 
 
@@ -131,15 +133,19 @@ for link in wordlist:
             fdf=getpagecontent(link)
             counter = counter + 1
             output_frame=pd.concat([output_frame,fdf])
-
+            print(f'Scrapping: {counter + 9}/{counter_limit + 10}')
         ########## if there is a last page number find it and loop through all pages until the last increasing counter for each page scraped###########
         else:
             pages = re.findall('(\d+)', last_number)
             for s in range(1, int(pages[0]) + 1):
-                url2 = f'{link}&page={s}'
-                fdf=getpagecontent(url2)
-                counter = counter + 1
-                output_frame=pd.concat([output_frame,fdf])
+                if counter<=counter_limit:
+                    url2 = f'{link}&page={s}'
+                    fdf=getpagecontent(url2)
+                    counter = counter + 1
+                    output_frame=pd.concat([output_frame,fdf])
+                    print(f'Scrapping: {counter+9}/{counter_limit+10}')
+                else:
+                    break
     ############ upon reaching page limit return information and break loop############
     else:
         print("page limit reached")

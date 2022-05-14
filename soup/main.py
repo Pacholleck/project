@@ -1,4 +1,8 @@
 limit_pages = True
+import os
+
+os.system('pip install pandas')
+os.system('pip install bs4')
 
 import time
 from urllib import request
