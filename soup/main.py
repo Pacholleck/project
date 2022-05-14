@@ -1,3 +1,5 @@
+import pandas as pd
+
 limit_pages = True
 import os
 
@@ -22,9 +24,9 @@ df1 = pandas.DataFrame(columns=['word', 'author', 'date'])
 page_limit = 10
 
 if limit_pages == True:
-    page_limit_ALL = 100
+    page_limit_ALL = 90
 else:
-    page_limit_ALL = 3
+    page_limit_ALL = 2
 
 url = 'http://urbandictionary.com'
 links = []
@@ -74,6 +76,7 @@ for link in links:
         for x in range(1,int(limit_3)+1):
 
             if counter <= page_limit_ALL:
+                print(f'Please wait, current progress: {(counter+10)*100/(page_limit_ALL+10)}%')
                 url_5 = link + '&page=' + str(x)
                 html_5 = request.urlopen(url_5)
                 bs_5 = BS(html_5.read(), 'html.parser')
@@ -86,23 +89,25 @@ for link in links:
                     word = div.findNext('a',{'class': 'word text-denim font-bold font-serif dark:text-fluorescent break-words text-3xl md:text-[2.75rem] md:leading-10'}).get_text()
                     authors = div.findNext('a', {'class': 'text-denim dark:text-fluorescent hover:text-limon-lime'}, href=re.compile('^/author.*')).get_text()
                     dates = div.findNext('div', {'class': 'contributor font-bold'})
-                    print(str(dates))
+                    #print(str(dates))
 
 
 
                     l4d = str(dates).split('</',2)
                     dates = str(l4d[1])[3:]
 
-                    print(counter)
+
 
                     d = {'word': word, 'author': authors, 'date': dates}
-                    df1 = df1.append(d, ignore_index=True)
+                    series=pd.Series(data=d,index=d.keys()).to_frame().T
+                    df1=pd.concat([series,df1])
+                    #df1 = df1.append(d, ignore_index=True)
 
                 counter = counter + 1
 
             else:
                 break
-        print(counter)
+        #print(counter)
     else:
         break
 
@@ -111,7 +116,7 @@ for link in links:
 
 
 
-print(df1.to_string())
+#print(df1.to_string())
 
 
 

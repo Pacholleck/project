@@ -1,4 +1,4 @@
-limiter = True
+limiter = False
 global counter
 
 import os
@@ -19,7 +19,7 @@ import re
 
 ### settings ##########
 
-custom_limit = 10
+custom_limit = 2
 
 word_pages = 10
 
